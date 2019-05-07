@@ -1,13 +1,9 @@
-struct Admin {
-
-}
-
 struct Dictamen {
-
-}
-
-struct Perito {
-
+    1: required i32 id;
+    2: required string comentario;
+    3: required string fecha;
+    4: required string hora;
+    5: required string ladoCulpable;
 }
 
 struct Respuesta {
