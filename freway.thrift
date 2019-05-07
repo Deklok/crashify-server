@@ -1,5 +1,5 @@
 struct Dictamen {
-    1: required i32 id;
+    1: required i32 idDictamen;
     2: required string comentario;
     3: required string fecha;
     4: required string hora;
@@ -12,15 +12,30 @@ struct Respuesta {
 }
 
 struct Reporte {
-
+    1: required i32 idReporte;
+    2: required string latitud;
+    3: required string longitud;
+    4: required string estauts;
+    5: required string ladoCulpable;
+    6: required list<Vehiculo> implicados;
 }
 
 struct Usuario {
-
+    1: required i32 idUsuario;
+    2: required string nombre;
+    3: required i32 rol;
+    4: required string usuario;
+    5: required string password;
 }
 
 struct Vehiculo {
-
+    1: required i32 idVehiculo;
+    2: required string marca;
+    3: required string modelo;
+    4: required i32 year;
+    5: required string color;
+    6: required string numPlacas;
+    7: required string nombreConductor;
 }
 
 exception Error {
