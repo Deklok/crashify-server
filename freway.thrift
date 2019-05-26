@@ -43,8 +43,17 @@ exception Error {
     2: required string mensaje;
 }
 
+service Transito {
+    Usuario iniciarSesion(1: string email, 2: string password) throws (1: Error exp)
+    Respuesta registrarUsuario(1: Usuario usuario) throws (1: Error exp)
+    list<Usuario> obtenerUsuarios() throws (1: Error exp)
+    list<Reporte> getAllReportes() throws (1: Error exp)
+    Reporte getReporte(1: i32 idReporte) throws (1: Error exp)
+    Respuesta dictaminarReporte(1: Dictamen dictamen, 2: i32 idPerito, 3: i32 idReporte) throws (1: Error exp)
+}
+
 service IniciarSesion {
-    Usuraio iniciarSesion(1: string email, 2: string password) throws (1: Error exp)
+    Usuario iniciarSesion(1: string email, 2: string password) throws (1: Error exp)
 }
 
 service RegistrarUsuario {
