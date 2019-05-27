@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package freeway;
+
+service Transito {
+    rpc Ping(Mensaje) returns (Mensaje) {}
+    rpc IniciarSesion(Sesion) returns (Usuario) {}
+}
+
+message Usuario {
+    int32 idUsuario = 1;
+    string nombre = 2;
+    int32 rol = 3;
+    string usuario = 4;
+    string password = 5;
+}
+
+message Sesion {
+    string usuario = 1;
+    string password = 2;
+}
+
+message Empty {}
+
+message Mensaje {
+    string msg = 1;
+}

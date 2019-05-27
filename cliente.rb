@@ -1,22 +1,17 @@
-require 'thrift'
-$:.push('gen-rb')
-require 'transito'
+this_dir = File.expand_path(File.dirname(__FILE__))
+lib_dir = File.join(this_dir, 'lib')
+$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
-transport = Thrift::BufferedTransport.new(Thrift::Socket.new('localhost', 9090))
-protocol = Thrift::BinaryProtocol.new(transport)
-client = Transito::Client.new(protocol)
+require 'grpc'
+require 'freeway_services_pb'
+include Freeway
 
-transport.open()
-
-response = client.ping()
-print response
-
-begin
-    user = client.iniciarSesion("deklok","123456")
-    print "llego objeto"
-    print user 
-rescue => exception
-    print exception.why
+def main
+    stub = Transito::Stub.new('localhost:9090', :this_channel_is_insecure)
+    response = stub.ping(Mensaje.new(msg: "something"))
+    print response.msg, "\n"
+    response = stub.iniciar_sesion(Sesion.new(usuario: "deklok",password: "123456"))
+    print response.nombre, "\n"
 end
-#print response
-#response.each { |u| print u.nombre, "\n" }
+
+main

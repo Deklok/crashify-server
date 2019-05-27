@@ -1,15 +1,20 @@
-require 'thrift'
-$:.push('gen-rb')
+this_dir = File.expand_path(File.dirname(__FILE__))
+lib_dir = File.join(this_dir, 'lib')
+$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
+
 require 'sequel'
 require 'tiny_tds'
-require 'transito'
+require 'grpc'
 require 'socket'
+require 'freeway_services_pb'
+require 'json'
+include Freeway
 
-class ServerHandler
+class ServerHandler < Transito::Service
     attr_accessor :DB, :tbl
 
     def initialize()
-        #sUsers = TCPSocket.open('localhost', 77777)
+        #@sUsers = TCPSocket.open('localhost', 77777)
         @db_connection_params = {
             :adapter => 'tinytds',
             :host => '3.217.0.253', # IP or hostname
@@ -22,21 +27,20 @@ class ServerHandler
         @@tbl = @@DB[:Usuario]
     end
 
-    def ping()
-        return "pong server"
+    def ping(msg, _unusedcall)
+        Mensaje.new(msg: "pong desde server")
     end
 
-    def iniciarSesion(user, pwd)
-        userF = Usuario.new()
-        user = @@tbl.where{(usuario =~ user) & (password =~ pwd)}.first
-        print user[:nombre]
-        userF.idUsuario =  user[:idUsuario]
-        userF.nombre = user[:nombre]
-        userF.rol = user[:rol]
-        userF.usuario = user[:usuario]
-        userF.password = user[:password]
-        print userF.nombre
-        return userF
+    def iniciar_sesion(sesion, _call)
+        user = @@tbl.where{(usuario =~ sesion.usuario) & (password =~ sesion.password)}.first
+        #print user[:nombre], "\n"
+        Usuario.new(
+            idUsuario: user[:idUsuario],
+            nombre: user[:nombre],
+            rol: user[:rol],
+            usuario: user[:usuario],
+            password: user[:password]
+        )
     end
 
     def registrarUsuario()
@@ -45,28 +49,13 @@ class ServerHandler
         # regresar respuesta
     end
 
-    def obtenerUsuarios()
-        msg = { "peticion" => "obtenerUsuarios" }
-        msg = msg.to_json
+    def obtenerUsuarios()        
         # llamar al socket de usuarios
-        sUsers.send(msg)
+        #sUsers.send(msg)
         # espera respuesta
-        respuesta = sUsers.read
+        #respuesta = sUsers.read
         # regresar respuesta
-        hash = JSON.parse(respuesta)
-        print hash.class
-        hash.each { |u| 
-            users.push(
-            Usuario.new(
-                u["idUsuario"],
-                u["nombre"],
-                u["rol"],
-                u["usuario"],
-                u["password"])
-            )
-        }
-        users.each { |u| print u.nombre, "\n" }
-        return users
+        #return users
     end
 
     def visualizarReportes()
@@ -86,15 +75,15 @@ class ServerHandler
         # espera respuesta
         # regresar respuesta
     end
-
 end
 
-handler = ServerHandler.new()
-processor = Transito::Processor.new(handler)
-transport = Thrift::ServerSocket.new(9090)
-transportFactory = Thrift::BufferedTransportFactory.new()
-server = Thrift::ThreadedServer.new(processor, transport, transportFactory)
+def main
+    server = GRPC::RpcServer.new
+    server.add_http2_port('localhost:9090', :this_port_is_insecure)
+    GRPC.logger.info("Corriendo skeleton en puerto inseguro");
+    server.handle(ServerHandler)
+    print "Iniciando servidor..."
+    server.run
+end
 
-puts "Iniciando skeleton..."
-server.serve()
-puts "Iniciado skeleton!"
+main
