@@ -11,13 +11,13 @@ module Transito
   class Client
     include ::Thrift::Client
 
-    def iniciarSesion(email, password)
-      send_iniciarSesion(email, password)
+    def iniciarSesion(usuario, password)
+      send_iniciarSesion(usuario, password)
       return recv_iniciarSesion()
     end
 
-    def send_iniciarSesion(email, password)
-      send_message('iniciarSesion', IniciarSesion_args, :email => email, :password => password)
+    def send_iniciarSesion(usuario, password)
+      send_message('iniciarSesion', IniciarSesion_args, :usuario => usuario, :password => password)
     end
 
     def recv_iniciarSesion()
@@ -107,6 +107,22 @@ module Transito
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'dictaminarReporte failed: unknown result')
     end
 
+    def ping()
+      send_ping()
+      return recv_ping()
+    end
+
+    def send_ping()
+      send_message('ping', Ping_args)
+    end
+
+    def recv_ping()
+      result = receive_message(Ping_result)
+      return result.success unless result.success.nil?
+      raise result.exp unless result.exp.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'ping failed: unknown result')
+    end
+
   end
 
   class Processor
@@ -116,7 +132,7 @@ module Transito
       args = read_args(iprot, IniciarSesion_args)
       result = IniciarSesion_result.new()
       begin
-        result.success = @handler.iniciarSesion(args.email, args.password)
+        result.success = @handler.iniciarSesion(args.usuario, args.password)
       rescue ::Error => exp
         result.exp = exp
       end
@@ -178,17 +194,28 @@ module Transito
       write_result(result, oprot, 'dictaminarReporte', seqid)
     end
 
+    def process_ping(seqid, iprot, oprot)
+      args = read_args(iprot, Ping_args)
+      result = Ping_result.new()
+      begin
+        result.success = @handler.ping()
+      rescue ::Error => exp
+        result.exp = exp
+      end
+      write_result(result, oprot, 'ping', seqid)
+    end
+
   end
 
   # HELPER FUNCTIONS AND STRUCTURES
 
   class IniciarSesion_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
-    EMAIL = 1
+    USUARIO = 1
     PASSWORD = 2
 
     FIELDS = {
-      EMAIL => {:type => ::Thrift::Types::STRING, :name => 'email'},
+      USUARIO => {:type => ::Thrift::Types::STRING, :name => 'usuario'},
       PASSWORD => {:type => ::Thrift::Types::STRING, :name => 'password'}
     }
 
@@ -379,6 +406,39 @@ module Transito
 
     FIELDS = {
       SUCCESS => {:type => ::Thrift::Types::STRUCT, :name => 'success', :class => ::Respuesta},
+      EXP => {:type => ::Thrift::Types::STRUCT, :name => 'exp', :class => ::Error}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class Ping_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class Ping_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SUCCESS = 0
+    EXP = 1
+
+    FIELDS = {
+      SUCCESS => {:type => ::Thrift::Types::STRING, :name => 'success'},
       EXP => {:type => ::Thrift::Types::STRUCT, :name => 'exp', :class => ::Error}
     }
 

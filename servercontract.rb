@@ -1,24 +1,44 @@
 require 'thrift'
 $:.push('gen-rb')
-
+require 'sequel'
+require 'tiny_tds'
 require 'transito'
 require 'socket'
 
-hostname = 'localhost'
-portUsers = 7777 # Puerto en donde el socket para el servicio de usuarios esta escuchando
+db_connection_params = {
+    :adapter => 'tinytds',
+    :host => '3.217.0.253', # IP or hostname
+    :port => '1433', # Required when using other that 1433 (default)
+    :database => 'transito',
+    :user => 'sa',
+    :password => 'Dba12345'
+}
 
-
+@DB = Sequel.connect(db_connection_params)
+@tbl = @DB[:Usuario]
 
 class ServerHandler
 
     def initialize()
-        sUsers = TCPSocket.open(hostname, portUsers)
+        #sUsers = TCPSocket.open('localhost', 77777)
     end
 
-    def iniciarSesion(correo, pass)
-        # llama al socket de usuarios
-        # espera respuesta
-        # regresar respuesta
+    def ping()
+        return "pong server"
+    end
+
+    def iniciarSesion(usuario, password)
+        user = @tbl.where{(usuario =~ user) & (password =~ pass)}.first
+        print user
+        userF = Usuario.new()
+        userF.nombre = "prueba"
+        #userF.idUsuario =  user[:idUsuario]
+        #userF.nombre = user[:nombre]
+        #userF.rol = user[:rol]
+        #userF.usuario = user[:usuario]
+        #userF.password = user[:password]
+        print userF.nombre
+        return userF
     end
 
     def registrarUsuario()
@@ -28,12 +48,27 @@ class ServerHandler
     end
 
     def obtenerUsuarios()
+        msg = { "peticion" => "obtenerUsuarios" }
+        msg = msg.to_json
         # llamar al socket de usuarios
-        sUsers.send("obtenerUsuarios")
+        sUsers.send(msg)
         # espera respuesta
         respuesta = sUsers.read
         # regresar respuesta
-        return respuesta
+        hash = JSON.parse(respuesta)
+        print hash.class
+        hash.each { |u| 
+            users.push(
+            Usuario.new(
+                u["idUsuario"],
+                u["nombre"],
+                u["rol"],
+                u["usuario"],
+                u["password"])
+            )
+        }
+        users.each { |u| print u.nombre, "\n" }
+        return users
     end
 
     def visualizarReportes()
