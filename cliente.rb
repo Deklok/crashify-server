@@ -10,7 +10,13 @@ transport.open()
 
 response = client.ping()
 print response
-response = client.iniciarSesion("deklok","123456")
-#print response["nombre"]
+
+begin
+    user = client.iniciarSesion("deklok","123456")
+    print "llego objeto"
+    print user 
+rescue => exception
+    print exception.why
+end
 #print response
 #response.each { |u| print u.nombre, "\n" }

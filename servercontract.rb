@@ -5,38 +5,36 @@ require 'tiny_tds'
 require 'transito'
 require 'socket'
 
-db_connection_params = {
-    :adapter => 'tinytds',
-    :host => '3.217.0.253', # IP or hostname
-    :port => '1433', # Required when using other that 1433 (default)
-    :database => 'transito',
-    :user => 'sa',
-    :password => 'Dba12345'
-}
-
-@DB = Sequel.connect(db_connection_params)
-@tbl = @DB[:Usuario]
-
 class ServerHandler
+    attr_accessor :DB, :tbl
 
     def initialize()
         #sUsers = TCPSocket.open('localhost', 77777)
+        @db_connection_params = {
+            :adapter => 'tinytds',
+            :host => '3.217.0.253', # IP or hostname
+            :port => '1433', # Required when using other that 1433 (default)
+            :database => 'transito',
+            :user => 'sa',
+            :password => 'Dba12345'
+        }
+        @@DB = Sequel.connect(@db_connection_params)
+        @@tbl = @@DB[:Usuario]
     end
 
     def ping()
         return "pong server"
     end
 
-    def iniciarSesion(usuario, password)
-        user = @tbl.where{(usuario =~ user) & (password =~ pass)}.first
-        print user
+    def iniciarSesion(user, pwd)
         userF = Usuario.new()
-        userF.nombre = "prueba"
-        #userF.idUsuario =  user[:idUsuario]
-        #userF.nombre = user[:nombre]
-        #userF.rol = user[:rol]
-        #userF.usuario = user[:usuario]
-        #userF.password = user[:password]
+        user = @@tbl.where{(usuario =~ user) & (password =~ pwd)}.first
+        print user[:nombre]
+        userF.idUsuario =  user[:idUsuario]
+        userF.nombre = user[:nombre]
+        userF.rol = user[:rol]
+        userF.usuario = user[:usuario]
+        userF.password = user[:password]
         print userF.nombre
         return userF
     end
