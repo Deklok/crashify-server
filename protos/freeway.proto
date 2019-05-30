@@ -5,14 +5,33 @@ package freeway;
 service Transito {
     rpc Ping(Mensaje) returns (Mensaje) {}
     rpc IniciarSesion(Sesion) returns (Usuario) {}
+    rpc RegistrarUsuario(Usuario) returns (Respuesta) {}
+    rpc ActualizarUsuario(Usuario) returns (Respuesta) {}
+    rpc EliminarUsuario(ID) returns (Respuesta) {}
+    rpc ObtenerReportes(Mensaje) returns (ListaReportes) {}
 }
 
 message Usuario {
-    int32 idUsuario = 1;
+    optional int32 idUsuario = 1;
     string nombre = 2;
     int32 rol = 3;
     string usuario = 4;
     string password = 5;
+}
+
+message ListaReportes {
+    message Reporte {
+        
+    }
+}
+
+message ID {
+    int32 id = 1;
+}
+
+message Respuesta {
+    int32 code = 1;
+    string mensaje = 2;
 }
 
 message Sesion {
