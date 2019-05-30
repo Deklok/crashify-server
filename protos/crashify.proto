@@ -12,7 +12,7 @@ service Transito {
 }
 
 message Usuario {
-    optional int32 idUsuario = 1;
+    int32 idUsuario = 1;
     string nombre = 2;
     int32 rol = 3;
     string usuario = 4;
