@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package freeway;
+package crashify;
 
 service Transito {
     rpc Ping(Mensaje) returns (Mensaje) {}

@@ -6,9 +6,9 @@ require 'sequel'
 require 'tiny_tds'
 require 'grpc'
 require 'socket'
-require 'freeway_services_pb'
+require 'crashify_services_pb'
 require 'json'
-include Freeway
+include Crashify
 
 class ServerHandler < Transito::Service
     attr_accessor :DB, :tbl
@@ -64,7 +64,7 @@ class ServerHandler < Transito::Service
         # regresar respuesta
     end
 
-    def verReporte(idReporte)
+    def verReporte(idReporte, _call)
         # llama al socker de reportes
         # espera respuesta
         # regresar respuesta
