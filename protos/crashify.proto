@@ -9,6 +9,8 @@ service Transito {
     rpc ActualizarUsuario(Usuario) returns (Respuesta) {}
     rpc EliminarUsuario(ID) returns (Respuesta) {}
     rpc ObtenerReportes(Mensaje) returns (ListaReportes) {}
+    rpc DictaminarReporte(Dictamen) returns (Respuesta) {}
+    rpc DictaminarReporteUnificado(Dictamen) returns (Respuesta) {}
 }
 
 message Usuario {
@@ -20,9 +22,35 @@ message Usuario {
 }
 
 message ListaReportes {
-    message Reporte {
-        
+    message Vehiculo {
+        string numPlacas = 1;
+        string modelo = 2;
+        string marca = 3;
+        string year = 4;
+        string color = 5;
+        string numPoliza = 6;
+        string aseguradora = 7;
     }
+    message Foto {
+        bytes foto = 1;
+    }
+    message Reporte {
+        int32 idReporte = 1;
+        int32 estado = 2;
+        int32 idSiniestroTemp = 3;
+        string comentario = 4;
+        int32 idConductor = 5;
+        repeated Vehiculo = 6;
+        repeated Foto = 7;
+    }
+    repeated Reporte = 1;
+}
+
+message Dictamen {
+    string dictamen = 1;
+    string hora = 2;
+    int32 idUsuario = 3;
+    int32 idSiniestro = 4;
 }
 
 message ID {
