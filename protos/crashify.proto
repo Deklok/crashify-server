@@ -40,10 +40,10 @@ message ListaReportes {
         int32 idSiniestroTemp = 3;
         string comentario = 4;
         int32 idConductor = 5;
-        repeated Vehiculo = 6;
-        repeated Foto = 7;
+        repeated Vehiculo  vehiculos = 6;
+        repeated Foto fotos = 7;
     }
-    repeated Reporte = 1;
+    repeated Reporte reportes = 1;
 }
 
 message Dictamen {
