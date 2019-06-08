@@ -16,6 +16,13 @@ module Crashify
 
       rpc :Ping, Mensaje, Mensaje
       rpc :IniciarSesion, Sesion, Usuario
+      rpc :ObtenerUsuarios, ID, ListaUsuarios
+      rpc :RegistrarUsuario, Usuario, Respuesta
+      rpc :ActualizarUsuario, Usuario, Respuesta
+      rpc :EliminarUsuario, ID, Respuesta
+      rpc :ObtenerReportes, Mensaje, ListaReportes
+      rpc :DictaminarReporte, Dictamen, Respuesta
+      rpc :DictaminarReporteUnificado, Dictamen, Respuesta
     end
 
     Stub = Service.rpc_stub_class

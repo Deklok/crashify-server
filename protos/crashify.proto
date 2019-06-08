@@ -5,6 +5,7 @@ package crashify;
 service Transito {
     rpc Ping(Mensaje) returns (Mensaje) {}
     rpc IniciarSesion(Sesion) returns (Usuario) {}
+    rpc ObtenerUsuarios(ID) returns (ListaUsuarios) {}
     rpc RegistrarUsuario(Usuario) returns (Respuesta) {}
     rpc ActualizarUsuario(Usuario) returns (Respuesta) {}
     rpc EliminarUsuario(ID) returns (Respuesta) {}
@@ -19,6 +20,11 @@ message Usuario {
     int32 rol = 3;
     string usuario = 4;
     string password = 5;
+    int32 idSuperior = 6;
+}
+
+message ListaUsuarios {
+    repeated Usuario usuarios = 1;
 }
 
 message ListaReportes {
@@ -54,7 +60,7 @@ message Dictamen {
 }
 
 message ID {
-    int32 id = 1;
+    int32 identifier = 1;
 }
 
 message Respuesta {
