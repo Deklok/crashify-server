@@ -10,9 +10,16 @@ def main
     stub = Transito::Stub.new('localhost:14586', :this_channel_is_insecure)
     response = stub.ping(Mensaje.new(msg: "something"))
     print response.msg, "\n"
+ 
     
-    res = stub.eliminar_usuario(ID.new(identifier: 6))
-    print res.mensaje, "\n"
+    reportes = stub.obtener_reportes(Mensaje.new(msg: "uwu"))
+    listareportes = reportes.reportes
+    listareportes.each { |reporte|
+        print reporte.hora,"\n"
+    }
+
+#    res = stub.eliminar_usuario(ID.new(identifier: 6))
+#    print res.mensaje, "\n"
 
 #    res = stub.actualizar_usuario(Usuario.new(
 #        idUsuario: 6,

@@ -27,29 +27,30 @@ message ListaUsuarios {
     repeated Usuario usuarios = 1;
 }
 
+message Vehiculo {
+    string numPlacas = 1;
+    string modelo = 2;
+    string marca = 3;
+    string year = 4;
+    string color = 5;
+    string numPoliza = 6;
+    string aseguradora = 7;
+}
+
+message Foto {
+    bytes foto = 1;
+}
+
+message ReporteResumido {
+    int32 idReporte = 1;
+    float latitud = 2;
+    float longitud = 3;
+    string hora = 4;
+    int32 idSiniestro = 5;
+}
+
 message ListaReportes {
-    message Vehiculo {
-        string numPlacas = 1;
-        string modelo = 2;
-        string marca = 3;
-        string year = 4;
-        string color = 5;
-        string numPoliza = 6;
-        string aseguradora = 7;
-    }
-    message Foto {
-        bytes foto = 1;
-    }
-    message Reporte {
-        int32 idReporte = 1;
-        int32 estado = 2;
-        int32 idSiniestroTemp = 3;
-        string comentario = 4;
-        int32 idConductor = 5;
-        repeated Vehiculo  vehiculos = 6;
-        repeated Foto fotos = 7;
-    }
-    repeated Reporte reportes = 1;
+    repeated ReporteResumido reportes = 1;
 }
 
 message Dictamen {

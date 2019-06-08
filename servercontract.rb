@@ -157,10 +157,38 @@ class ServerHandler < Transito::Service
         end
     end
 
-    def visualizarReportes()
-        # llama al socket de reportes
-        # espera respuesta
-        # regresar respuesta
+    def obtener_reportes(_unusedmsg, _call)
+        begin
+            listaReportes = Array.new
+            res = @@DB.call_mssql_sproc(:sp_contarReportes, {args: [[:output, 'int', 'resultado']]})
+            reportes = @@DB.call_mssql_sproc(:sp_obtenerReportes)
+            if res[:resultado] < 2
+                r = ReporteResumido.new(
+                    idReporte: reportes[:idreporte],
+                    latitud: reportes[:latitud],
+                    longitud: reportes[:longitud],
+                    hora: reportes[:hora].to_s,
+                    idSiniestro: reportes[:idtemp_siniestro]
+                )
+                listaReportes.push(r)
+            else
+                reportes.each { |row|
+                    print row, "\n"
+                    r = ReporteResumido.new(
+                        idReporte: row[:idreporte],
+                        latitud: row[:latitud],
+                        longitud: row[:longitud],
+                        hora: row[:hora],
+                        idSiniestro: row[:idtemp_siniestro]
+                    )
+                    listaReportes.push(r)
+                }
+            end
+            ListaReportes.new(reportes: listaReportes)
+        rescue => exception
+            print exception, "\n"
+            #print exception.backtrace.join("\n")
+        end
     end
 
     def verReporte(idReporte, _call)
