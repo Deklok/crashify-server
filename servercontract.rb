@@ -40,11 +40,12 @@ class ServerHandler < Transito::Service
     def iniciar_sesion(sesion, _call)
         user = @@tblUsuario.where{(usuario =~ sesion.usuario) & (password =~ sesion.password)}.first
         Usuario.new(
-            idUsuario: user[:idUsuario],
-            nombre: user[:nombre],
-            rol: user[:rol],
-            usuario: user[:usuario],
-            password: user[:password]
+            idUsuario: row[:idusuario],
+            nombre: row[:nombre],
+            rol: row[:rol],
+            usuario: row[:usuario],
+            password: row[:password],
+            idSuperior: row[:idsuperior],
         )
     end
 
