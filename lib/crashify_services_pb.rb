@@ -21,8 +21,10 @@ module Crashify
       rpc :ActualizarUsuario, Usuario, Respuesta
       rpc :EliminarUsuario, ID, Respuesta
       rpc :ObtenerReportes, Mensaje, ListaReportes
+      rpc :ObtenerDetalleReporte, ID, Reporte
       rpc :DictaminarReporte, Dictamen, Respuesta
-      rpc :DictaminarReporteUnificado, Dictamen, Respuesta
+      rpc :DictaminarReporteUnificado, DictamenUnificado, Respuesta
+      rpc :UnificarReportes, ListaID, Respuesta
     end
 
     Stub = Service.rpc_stub_class

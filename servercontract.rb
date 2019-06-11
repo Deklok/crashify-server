@@ -74,7 +74,7 @@ class ServerHandler < Transito::Service
             print exception, "\n"
             Respuesta.new(
                 code: 99,
-                mensaje: exception
+                mensaje: exception.to_s
             )
         end
     end
@@ -127,7 +127,7 @@ class ServerHandler < Transito::Service
             print exception, "\n"
             Respuesta.new(
                 code: 99,
-                mensaje: exception
+                mensaje: exception.to_s
             )
         end
     end
@@ -153,7 +153,7 @@ class ServerHandler < Transito::Service
             print exception, "\n"
             Respuesta.new(
                 code: 99,
-                mensaje: exception
+                mensaje: exception.to_s
             )
         end
     end
@@ -192,16 +192,197 @@ class ServerHandler < Transito::Service
         end
     end
 
-    def verReporte(idReporte, _call)
-        # llama al socker de reportes
-        # espera respuesta
-        # regresar respuesta
+    def obtener_detalle_reporte(id, _call)
+        begin
+            res = @@DB.call_mssql_sproc(:sp_obtenerDetalleReporte, {args: [
+                id.identifier,
+                [:output, 'int', 'resultado']
+            ]})
+            fotos = @@DB[:Foto].where.where{(idReporte =~ id.identifier)}
+            listaFotos = Array.new
+            listaVehiculos = Array.new
+            fotos.each { |foto|
+                listaFotos.push(foto)
+            }
+            fotos.each { |row|
+                listaFotos.push(row[:foto])
+            }
+            autosRegistrados = @@DB.call_mssql_sproc(:sp_obtenerVehiculosReporte, {args: [
+                id.identifier,
+                [:output, 'int', 'resultado']
+            ]})
+            autosAnonimos = @@DB.call_mssql_sproc(:sp_obtenerVehiculosAnonimosReporte, {args: [
+                id.identifier,
+                [:output, 'int', 'resultado']
+            ]})
+            
+
+            if autosRegistrados[:resultado] < 2
+                v = Vehiculo.new(
+                    numPlacas: autosRegistrados[:numPlacas],
+                    modelo: autosRegistrados[:modelo],
+                    marca: autosRegistrados[:marca],
+                    year: autosRegistrados[:año],
+                    color: autosRegistrados[:color],
+                    numPoliza: autosRegistrados[:numPoliza],
+                    aseguradora: autosRegistrados[:aseguradora]
+                )
+                listaVehiculos.push(v)
+            else
+                autosRegistrados.each { |row|
+                    print row, "\n"
+                    v = ReporteResumido.new(
+                        numPlacas: row[:numPlacas],
+                        modelo: row[:modelo],
+                        marca: row[:marca],
+                        year: row[:año],
+                        color: row[:color],
+                        numPoliza: row[:numPoliza],
+                        aseguradora: row[:aseguradora]
+                    )
+                    listaVehiculos.push(v)
+                }
+            end
+
+
+            if autosAnonimos[:resultado] < 2
+                v = Vehiculo.new(
+                    numPlacas: autosAnonimos[:numPlacas],
+                    modelo: autosAnonimos[:modelo],
+                    marca: autosAnonimos[:marca],
+                    year: autosAnonimos[:año],
+                    color: autosAnonimos[:color],
+                    numPoliza: autosAnonimos[:numPoliza],
+                    aseguradora: autosAnonimos[:aseguradora]
+                )
+                listaVehiculos.push(v)
+            else
+                autosAnonimos.each { |row|
+                    print row, "\n"
+                    v = ReporteResumido.new(
+                        numPlacas: row[:numPlacas],
+                        modelo: row[:modelo],
+                        marca: row[:marca],
+                        year: row[:año],
+                        color: row[:color],
+                        numPoliza: row[:numPoliza],
+                        aseguradora: row[:aseguradora]
+                    )
+                    listaVehiculos.push(v)
+                }
+            end
+
+            Reporte.new(
+                idReporte: res[:idreporte],
+                latitud: res[:latitud],
+                longitud: res[:longitud],
+                hora: res[:hora].to_s,
+                vehiculos: listaVehiculos,
+                fotos: listaFotos,
+                idSiniestro: res[:idtemp_siniestro],
+                estado: res[:estado]
+            )
+        rescue => exception
+            print exception, "\n"
+            print exception.backtrace.join("\n")
+        end
     end
 
-    def dictaminarReporte()
-        # llama al socker de reportes
-        # espera respuesta
-        # regresar respuesta
+    def unificar_reportes(listaIDs, _call)
+        begin
+            ids = listaIDs.listaID
+            idReporte = ids.first
+            print idReporte, "\n"
+            res = @@DB.call_mssql_sproc(:sp_siniestroUnificado, {args: [
+                idReporte,
+                [:output, 'int', 'resultado']
+            ]})
+            errorActualizacion = false
+            idSiniestroUnificado = res[:resultado]
+            ids.each { |id|
+                res = @@DB.call_mssql_sproc(:sp_asignarSiniestroUnificado, {args: [
+                    idSiniestroUnificado,
+                    id,
+                    [:output, 'int', 'resultado']
+                ]})
+                if res[:resultado] == -1
+                    errorActualizacion = true
+                end
+            }
+            if !errorActualizacion
+                Respuesta.new(
+                    code: 1,
+                    mensaje: "Reportes unificados correctamente"
+                )
+            else
+                Respuesta.new(
+                    code: -1,
+                    mensaje: "Error al unificar reportes"
+                )
+            end
+        rescue => exception
+            #print exception.backtrace.join("\n")
+            print exception, "\n"
+            Respuesta.new(
+                code: 99,
+                mensaje: exception.to_s
+            )
+        end
+    end
+
+    def dictaminar_reporte_unificado(dictamen, _call)
+        begin
+            listaIds = dictamen.idReporte.join(",")
+            res = @@DB.call_mssql_sproc(:sp_dictaminarReporte, {args: [
+                dictamen.dictamen,
+                dictamen.idSiniestro,
+                dictamen.idUsuario,
+                listaIds,
+                [:output, 'int', 'resultado']
+            ]})
+            if res[:resultado] != -1
+                Respuesta.new(
+                    code: 1,
+                    mensaje: "Reporte dictaminado correctamente"
+                )
+            else
+                Respuesta.new(
+                    code: res[:resultado],
+                    mensaje: "Error al dictaminar el reporte"
+                )
+            end
+        rescue => exception
+            
+        end
+    end
+
+    def dictaminar_reporte(dictamen, _call)
+        begin
+            res = @@DB.call_mssql_sproc(:sp_dictaminarReporte, {args: [
+                dictamen.dictamen,
+                dictamen.idSiniestro,
+                dictamen.idUsuario,
+                dictamen.idReporte,
+                [:output, 'int', 'resultado']
+            ]})
+            if res[:resultado] != -1
+                Respuesta.new(
+                    code: 1,
+                    mensaje: "Reporte dictaminado correctamente"
+                )
+            else
+                Respuesta.new(
+                    code: res[:resultado],
+                    mensaje: "Error al dictaminar el reporte"
+                )
+            end
+        rescue => exception
+            print exception, "\n"
+            Respuesta.new(
+                code: 99,
+                mensaje: exception.to_s
+            )
+        end
     end
 end
 

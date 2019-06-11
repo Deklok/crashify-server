@@ -10,8 +10,10 @@ service Transito {
     rpc ActualizarUsuario(Usuario) returns (Respuesta) {}
     rpc EliminarUsuario(ID) returns (Respuesta) {}
     rpc ObtenerReportes(Mensaje) returns (ListaReportes) {}
+    rpc ObtenerDetalleReporte(ID) returns (Reporte) {}
     rpc DictaminarReporte(Dictamen) returns (Respuesta) {}
-    rpc DictaminarReporteUnificado(Dictamen) returns (Respuesta) {}
+    rpc DictaminarReporteUnificado(DictamenUnificado) returns (Respuesta) {}
+    rpc UnificarReportes(ListaID) returns (Respuesta) {}
 }
 
 message Usuario {
@@ -37,8 +39,15 @@ message Vehiculo {
     string aseguradora = 7;
 }
 
-message Foto {
-    bytes foto = 1;
+message Reporte {
+    int32 idReporte = 1;
+    float latitud = 2;
+    float longitud = 3;
+    string hora = 4;
+    repeated Vehiculo vehiculos = 5;
+    repeated bytes fotos = 6;
+    int32 idSiniestro = 7;
+    int32 estado = 8;
 }
 
 message ReporteResumido {
@@ -47,6 +56,7 @@ message ReporteResumido {
     float longitud = 3;
     string hora = 4;
     int32 idSiniestro = 5;
+    int32 estado = 6;
 }
 
 message ListaReportes {
@@ -58,10 +68,23 @@ message Dictamen {
     string hora = 2;
     int32 idUsuario = 3;
     int32 idSiniestro = 4;
+    int32 idReporte = 5;
+}
+
+message DictamenUnificado {
+    string dictamen = 1;
+    string hora = 2;
+    int32 idUsuario = 3;
+    int32 idSiniestro = 4;
+    repeated int32 idReporte = 5;
 }
 
 message ID {
     int32 identifier = 1;
+}
+
+message ListaID {
+    repeated int32 listaID = 1;
 }
 
 message Respuesta {
