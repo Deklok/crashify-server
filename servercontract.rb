@@ -30,7 +30,7 @@ class ServerHandler < Transito::Service
         begin
             resultado = 0;
             res = @@DB.call_mssql_sproc(:sp_Prueba, {args: ["wea", [:output, 'int', 'resultado']]})
-            print res, "\n"
+            #print res, "\n"
             Mensaje.new(msg: "pong desde server + respuesta: " + res[:resultado].to_s) 
         rescue => exception
             print exception, "\n"
@@ -162,7 +162,9 @@ class ServerHandler < Transito::Service
         begin
             listaReportes = Array.new
             res = @@DB.call_mssql_sproc(:sp_contarReportes, {args: [[:output, 'int', 'resultado']]})
-            reportes = @@DB.call_mssql_sproc(:sp_obtenerReportes)
+            print res, "\n"
+            reportes = @@DB["EXEC sp_obtenerReportes"]
+            print reportes, "\n"
             if res[:resultado] < 2
                 r = ReporteResumido.new(
                     idReporte: reportes[:idreporte],
@@ -179,7 +181,7 @@ class ServerHandler < Transito::Service
                         idReporte: row[:idreporte],
                         latitud: row[:latitud],
                         longitud: row[:longitud],
-                        hora: row[:hora],
+                        hora: row[:hora].to_s,
                         idSiniestro: row[:idtemp_siniestro]
                     )
                     listaReportes.push(r)
