@@ -8,7 +8,7 @@ include Crashify
 
 def main
     stub = Transito::Stub.new('localhost:14586', :this_channel_is_insecure)
-    response = stub.ping(Mensaje.new(msg: "something"))
+    response = stub.ping(Mensaje.new(msg: "owo"))
     print response.msg, "\n"
 
 #    listaIDS = Array.new
@@ -16,13 +16,16 @@ def main
 #    listaIDS.push(5)
 #    listaIDS.push(6)
 
+#    detalle = stub.obtener_detalle_reporte(ID.new(identifier: 5))
+
 #    response = stub.unificar_reportes(ListaID.new(listaID: listaIDS))
-#    print response.msg, "\n"
-    reportes = stub.obtener_reportes(Mensaje.new(msg: "uwu"))
-    listareportes = reportes.reportes
-    listareportes.each { |reporte|
-        print reporte.hora,"\n"
-    }
+#print response.msg, "\n"
+
+#    reportes = stub.obtener_reportes(Mensaje.new(msg: "uwu"))
+#    listareportes = reportes.reportes
+#    listareportes.each { |reporte|
+#        print reporte.hora,"\n"
+#    }
 
 #    res = stub.eliminar_usuario(ID.new(identifier: 6))
 #    print res.mensaje, "\n"

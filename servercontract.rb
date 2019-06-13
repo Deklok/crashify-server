@@ -30,7 +30,7 @@ class ServerHandler < Transito::Service
         begin
             resultado = 0;
             res = @@DB.call_mssql_sproc(:sp_Prueba, {args: ["wea", [:output, 'int', 'resultado']]})
-            #print res, "\n"
+            print res, "\n"
             Mensaje.new(msg: "pong desde server + respuesta: " + res[:resultado].to_s) 
         rescue => exception
             print exception, "\n"
@@ -199,28 +199,52 @@ class ServerHandler < Transito::Service
     def obtener_detalle_reporte(id, _call)
         begin
             res = @@DB.call_mssql_sproc(:sp_obtenerDetalleReporte, {args: [
-                id.identifier,
-                [:output, 'int', 'resultado']
+                id.identifier
             ]})
-            fotos = @@DB[:Foto].where.where{(idReporte =~ id.identifier)}
+            fotos = @@DB.call_mssql_sproc(:sp_obtenerFotosReporte, {args: [
+                id.identifier
+            ]})
             listaFotos = Array.new
             listaVehiculos = Array.new
-            fotos.each { |foto|
-                listaFotos.push(foto)
-            }
             fotos.each { |row|
                 listaFotos.push(row[:foto])
             }
             autosRegistrados = @@DB.call_mssql_sproc(:sp_obtenerVehiculosReporte, {args: [
-                id.identifier,
-                [:output, 'int', 'resultado']
+                id.identifier
             ]})
             autosAnonimos = @@DB.call_mssql_sproc(:sp_obtenerVehiculosAnonimosReporte, {args: [
-                id.identifier,
-                [:output, 'int', 'resultado']
+                id.identifier
             ]})
-            
 
+            autosRegistrados.each { |row|
+                print row, "\n"
+                v = ReporteResumido.new(
+                    numPlacas: row[:numPlacas],
+                    modelo: row[:modelo],
+                    marca: row[:marca],
+                    year: row[:año],
+                    color: row[:color],
+                    numPoliza: row[:numPoliza],
+                    aseguradora: row[:aseguradora]
+                )
+                listaVehiculos.push(v)
+            }
+
+            autosAnonimos.each { |row|
+                print row, "\n"
+                v = ReporteResumido.new(
+                    numPlacas: row[:numPlacas],
+                    modelo: row[:modelo],
+                    marca: row[:marca],
+                    year: row[:año],
+                    color: row[:color],
+                    numPoliza: row[:numPoliza],
+                    aseguradora: row[:aseguradora]
+                )
+                listaVehiculos.push(v)
+            }
+
+=begin
             if autosRegistrados[:resultado] < 2
                 v = Vehiculo.new(
                     numPlacas: autosRegistrados[:numPlacas],
@@ -233,19 +257,7 @@ class ServerHandler < Transito::Service
                 )
                 listaVehiculos.push(v)
             else
-                autosRegistrados.each { |row|
-                    print row, "\n"
-                    v = ReporteResumido.new(
-                        numPlacas: row[:numPlacas],
-                        modelo: row[:modelo],
-                        marca: row[:marca],
-                        year: row[:año],
-                        color: row[:color],
-                        numPoliza: row[:numPoliza],
-                        aseguradora: row[:aseguradora]
-                    )
-                    listaVehiculos.push(v)
-                }
+                # ciclo line 219
             end
 
 
@@ -261,21 +273,9 @@ class ServerHandler < Transito::Service
                 )
                 listaVehiculos.push(v)
             else
-                autosAnonimos.each { |row|
-                    print row, "\n"
-                    v = ReporteResumido.new(
-                        numPlacas: row[:numPlacas],
-                        modelo: row[:modelo],
-                        marca: row[:marca],
-                        year: row[:año],
-                        color: row[:color],
-                        numPoliza: row[:numPoliza],
-                        aseguradora: row[:aseguradora]
-                    )
-                    listaVehiculos.push(v)
-                }
+                #ciclo line 233
             end
-
+=end
             Reporte.new(
                 idReporte: res[:idreporte],
                 latitud: res[:latitud],
