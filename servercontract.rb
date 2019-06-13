@@ -186,7 +186,7 @@ class ServerHandler < Transito::Service
                         hora: row[:hora].to_s,
                         idSiniestro: row[:idtemp_siniestro],
                         nombreConductor: row[:nombre],
-                        idSiniestroUnificado: reportes[:idsiniestro]
+                        idSiniestroUnificado: row[:idsiniestro]
                     )
                     listaReportes.push(r)
                 }
