@@ -172,7 +172,8 @@ class ServerHandler < Transito::Service
                     longitud: reportes[:longitud],
                     hora: reportes[:hora].to_s,
                     idSiniestro: reportes[:idtemp_siniestro],
-                    nombreConductor: reportes[:nombre]
+                    nombreConductor: reportes[:nombre],
+                    idSiniestroUnificado: reportes[:idsiniestro]
                 )
                 listaReportes.push(r)
             else
@@ -184,7 +185,8 @@ class ServerHandler < Transito::Service
                         longitud: row[:longitud],
                         hora: row[:hora].to_s,
                         idSiniestro: row[:idtemp_siniestro],
-                        nombreConductor: row[:nombre]
+                        nombreConductor: row[:nombre],
+                        idSiniestroUnificado: reportes[:idsiniestro]
                     )
                     listaReportes.push(r)
                 }

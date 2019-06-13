@@ -43,6 +43,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :idSiniestro, :int32, 5
       optional :estado, :int32, 6
       optional :nombreConductor, :string, 7
+      optional :idSiniestroUnificado, :int32, 8
     end
     add_message "crashify.ListaReportes" do
       repeated :reportes, :message, 1, "crashify.ReporteResumido"

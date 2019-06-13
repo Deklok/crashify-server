@@ -58,6 +58,7 @@ message ReporteResumido {
     int32 idSiniestro = 5;
     int32 estado = 6;
     string nombreConductor = 7;
+    int32 idSiniestroUnificado = 8;
 }
 
 message ListaReportes {
