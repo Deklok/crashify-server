@@ -198,19 +198,28 @@ class ServerHandler < Transito::Service
         end
     end
 
+    def obtener_fotos_reporte(id, _call)
+        begin
+            fotos = @@DB.call_mssql_sproc(:sp_obtenerFotosReporte, {args: [
+                id.identifier
+            ]})
+            listaFotos = Array.new
+            fotos.each { |row|
+                f = Foto.new(
+                    foto: row[:foto]
+                )
+            }
+        rescue => exception
+            print exception, "\n"
+        end
+    end
+
     def obtener_detalle_reporte(id, _call)
         begin
             res = @@DB.call_mssql_sproc(:sp_obtenerDetalleReporte, {args: [
                 id.identifier
             ]})
-            fotos = @@DB.call_mssql_sproc(:sp_obtenerFotosReporte, {args: [
-                id.identifier
-            ]})
-            listaFotos = Array.new
             listaVehiculos = Array.new
-            fotos.each { |row|
-                listaFotos.push(row[:foto])
-            }
             countRegistrados = @@DB.call_mssql_sproc(:sp_contarVehiculosReporte, {args: [
                 id.identifier,
                 [:output, 'int', 'resultado']
@@ -287,7 +296,6 @@ class ServerHandler < Transito::Service
                 longitud: res[:longitud],
                 hora: res[:hora].to_s,
                 vehiculos: listaVehiculos,
-                fotos: listaFotos,
                 idSiniestro: res[:idtemp_siniestro],
                 estado: res[:estado]
             )

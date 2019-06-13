@@ -11,6 +11,7 @@ service Transito {
     rpc EliminarUsuario(ID) returns (Respuesta) {}
     rpc ObtenerReportes(Mensaje) returns (ListaReportes) {}
     rpc ObtenerDetalleReporte(ID) returns (Reporte) {}
+    rpc ObtenerFotosReporte(ID) returns (stream Foto) {}
     rpc DictaminarReporte(Dictamen) returns (Respuesta) {}
     rpc DictaminarReporteUnificado(DictamenUnificado) returns (Respuesta) {}
     rpc UnificarReportes(ListaID) returns (Respuesta) {}
@@ -45,9 +46,12 @@ message Reporte {
     float longitud = 3;
     string hora = 4;
     repeated Vehiculo vehiculos = 5;
-    repeated bytes fotos = 6;
-    int32 idSiniestro = 7;
-    int32 estado = 8;
+    int32 idSiniestro = 6;
+    int32 estado = 7;
+}
+
+message Foto {
+    bytes foto = 1;
 }
 
 message ReporteResumido {

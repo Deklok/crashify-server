@@ -31,9 +31,11 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :longitud, :float, 3
       optional :hora, :string, 4
       repeated :vehiculos, :message, 5, "crashify.Vehiculo"
-      repeated :fotos, :bytes, 6
-      optional :idSiniestro, :int32, 7
-      optional :estado, :int32, 8
+      optional :idSiniestro, :int32, 6
+      optional :estado, :int32, 7
+    end
+    add_message "crashify.Foto" do
+      optional :foto, :bytes, 1
     end
     add_message "crashify.ReporteResumido" do
       optional :idReporte, :int32, 1
@@ -89,6 +91,7 @@ module Crashify
   ListaUsuarios = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.ListaUsuarios").msgclass
   Vehiculo = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.Vehiculo").msgclass
   Reporte = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.Reporte").msgclass
+  Foto = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.Foto").msgclass
   ReporteResumido = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.ReporteResumido").msgclass
   ListaReportes = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.ListaReportes").msgclass
   Dictamen = Google::Protobuf::DescriptorPool.generated_pool.lookup("crashify.Dictamen").msgclass

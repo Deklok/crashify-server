@@ -22,6 +22,7 @@ module Crashify
       rpc :EliminarUsuario, ID, Respuesta
       rpc :ObtenerReportes, Mensaje, ListaReportes
       rpc :ObtenerDetalleReporte, ID, Reporte
+      rpc :ObtenerFotosReporte, ID, stream(Foto)
       rpc :DictaminarReporte, Dictamen, Respuesta
       rpc :DictaminarReporteUnificado, DictamenUnificado, Respuesta
       rpc :UnificarReportes, ListaID, Respuesta
