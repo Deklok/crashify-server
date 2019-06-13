@@ -57,6 +57,7 @@ message ReporteResumido {
     string hora = 4;
     int32 idSiniestro = 5;
     int32 estado = 6;
+    string nombreConductor = 7;
 }
 
 message ListaReportes {
