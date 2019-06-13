@@ -209,6 +209,14 @@ class ServerHandler < Transito::Service
             fotos.each { |row|
                 listaFotos.push(row[:foto])
             }
+            countRegistrados = @@DB.call_mssql_sproc(:sp_contarVehiculosReporte, {args: [
+                id.identifier,
+                [:output, 'int', 'resultado']
+            ]})
+            countAnonimos = @@DB.call_mssql_sproc(:sp_contarVehiculosAnonimoReportes, {args: [
+                id.identifier,
+                [:output, 'int', 'resultado']
+            ]})
             autosRegistrados = @@DB.call_mssql_sproc(:sp_obtenerVehiculosReporte, {args: [
                 id.identifier
             ]})
@@ -216,36 +224,7 @@ class ServerHandler < Transito::Service
                 id.identifier
             ]})
 
-            autosRegistrados.each { |row|
-                print row, "\n"
-                v = ReporteResumido.new(
-                    numPlacas: row[:numPlacas],
-                    modelo: row[:modelo],
-                    marca: row[:marca],
-                    year: row[:año],
-                    color: row[:color],
-                    numPoliza: row[:numPoliza],
-                    aseguradora: row[:aseguradora]
-                )
-                listaVehiculos.push(v)
-            }
-
-            autosAnonimos.each { |row|
-                print row, "\n"
-                v = ReporteResumido.new(
-                    numPlacas: row[:numPlacas],
-                    modelo: row[:modelo],
-                    marca: row[:marca],
-                    year: row[:año],
-                    color: row[:color],
-                    numPoliza: row[:numPoliza],
-                    aseguradora: row[:aseguradora]
-                )
-                listaVehiculos.push(v)
-            }
-
-=begin
-            if autosRegistrados[:resultado] < 2
+            if countRegistrados[:resultado] < 2
                 v = Vehiculo.new(
                     numPlacas: autosRegistrados[:numPlacas],
                     modelo: autosRegistrados[:modelo],
@@ -257,11 +236,23 @@ class ServerHandler < Transito::Service
                 )
                 listaVehiculos.push(v)
             else
-                # ciclo line 219
+               autosRegistrados.each { |row|
+                print row, "\n"
+                v = ReporteResumido.new(
+                    numPlacas: row[:numPlacas],
+                    modelo: row[:modelo],
+                    marca: row[:marca],
+                    year: row[:año],
+                    color: row[:color],
+                    numPoliza: row[:numPoliza],
+                    aseguradora: row[:aseguradora]
+                )
+                listaVehiculos.push(v)
+            }
             end
 
 
-            if autosAnonimos[:resultado] < 2
+            if countAnonimos[:resultado] < 2
                 v = Vehiculo.new(
                     numPlacas: autosAnonimos[:numPlacas],
                     modelo: autosAnonimos[:modelo],
@@ -273,9 +264,21 @@ class ServerHandler < Transito::Service
                 )
                 listaVehiculos.push(v)
             else
-                #ciclo line 233
+                autosAnonimos.each { |row|
+                print row, "\n"
+                v = ReporteResumido.new(
+                    numPlacas: row[:numPlacas],
+                    modelo: row[:modelo],
+                    marca: row[:marca],
+                    year: row[:año],
+                    color: row[:color],
+                    numPoliza: row[:numPoliza],
+                    aseguradora: row[:aseguradora]
+                )
+                listaVehiculos.push(v)
+            }
             end
-=end
+
             Reporte.new(
                 idReporte: res[:idreporte],
                 latitud: res[:latitud],
