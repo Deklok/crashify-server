@@ -275,19 +275,21 @@ class ServerHandler < Transito::Service
                 )
                 listaVehiculos.push(v)
             else
-                autosAnonimos.each { |row|
-                print row, "\n"
-                v = ReporteResumido.new(
-                    numPlacas: row[:numPlacas],
-                    modelo: row[:modelo],
-                    marca: row[:marca],
-                    year: row[:año],
-                    color: row[:color],
-                    numPoliza: row[:numPoliza],
-                    aseguradora: row[:aseguradora]
-                )
-                listaVehiculos.push(v)
-            }
+                if countAnonimos > 0
+                    autosAnonimos.each { |row|
+                        print row, "\n"
+                        v = ReporteResumido.new(
+                            numPlacas: row[:numPlacas],
+                            modelo: row[:modelo],
+                            marca: row[:marca],
+                            year: row[:año],
+                            color: row[:color],
+                            numPoliza: row[:numPoliza],
+                            aseguradora: row[:aseguradora]
+                        )
+                        listaVehiculos.push(v)
+                    }
+                end
             end
 
             Reporte.new(
