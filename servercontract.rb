@@ -239,11 +239,11 @@ class ServerHandler < Transito::Service
                 v = Vehiculo.new(
                     numPlacas: autosRegistrados[:numPlacas],
                     modelo: autosRegistrados[:modelo],
-                    marca: autosRegistrados[:marca],
+                    marca: autosRegistrados[:field3],
                     year: autosRegistrados[:año],
                     color: autosRegistrados[:color],
                     numPoliza: autosRegistrados[:numPoliza],
-                    aseguradora: autosRegistrados[:aseguradora]
+                    aseguradora: autosRegistrados[:field7]
                 )
                 listaVehiculos.push(v)
             else
@@ -252,11 +252,11 @@ class ServerHandler < Transito::Service
                 v = ReporteResumido.new(
                     numPlacas: row[:numPlacas],
                     modelo: row[:modelo],
-                    marca: row[:marca],
+                    marca: row[:field3],
                     year: row[:año],
                     color: row[:color],
                     numPoliza: row[:numPoliza],
-                    aseguradora: row[:aseguradora]
+                    aseguradora: row[:field7]
                 )
                 listaVehiculos.push(v)
             }
@@ -267,11 +267,11 @@ class ServerHandler < Transito::Service
                 v = Vehiculo.new(
                     numPlacas: autosAnonimos[:numPlacas],
                     modelo: autosAnonimos[:modelo],
-                    marca: autosAnonimos[:marca],
+                    marca: autosAnonimos[:field3],
                     year: autosAnonimos[:año],
                     color: autosAnonimos[:color],
                     numPoliza: autosAnonimos[:numPoliza],
-                    aseguradora: autosAnonimos[:aseguradora]
+                    aseguradora: autosAnonimos[:field7]
                 )
                 listaVehiculos.push(v)
             else
@@ -281,11 +281,11 @@ class ServerHandler < Transito::Service
                         v = ReporteResumido.new(
                             numPlacas: row[:numPlacas],
                             modelo: row[:modelo],
-                            marca: row[:marca],
+                            marca: row[:field3],
                             year: row[:año],
                             color: row[:color],
                             numPoliza: row[:numPoliza],
-                            aseguradora: row[:aseguradora]
+                            aseguradora: row[:field7]
                         )
                         listaVehiculos.push(v)
                     }
