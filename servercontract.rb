@@ -236,27 +236,28 @@ class ServerHandler < Transito::Service
             ]})
 
             if countRegistrados[:resultado] < 2
+                print autosRegistrados,"\n"
                 v = Vehiculo.new(
-                    numPlacas: autosRegistrados[:numPlacas],
+                    numPlacas: autosRegistrados[:numplacas],
                     modelo: autosRegistrados[:modelo],
-                    marca: autosRegistrados[:field3],
+                    marca: autosRegistrados[:marca],
                     year: autosRegistrados[:año],
                     color: autosRegistrados[:color],
-                    numPoliza: autosRegistrados[:numPoliza],
-                    aseguradora: autosRegistrados[:field7]
+                    numPoliza: autosRegistrados[:numpoliza],
+                    aseguradora: autosRegistrados[:aseguradora]
                 )
                 listaVehiculos.push(v)
             else
                autosRegistrados.each { |row|
                 print row, "\n"
                 v = ReporteResumido.new(
-                    numPlacas: row[:numPlacas],
+                    numPlacas: row[:numplacas],
                     modelo: row[:modelo],
-                    marca: row[:field3],
+                    marca: row[:marca],
                     year: row[:año],
                     color: row[:color],
-                    numPoliza: row[:numPoliza],
-                    aseguradora: row[:field7]
+                    numPoliza: row[:numpoliza],
+                    aseguradora: row[:aseguradora]
                 )
                 listaVehiculos.push(v)
             }
@@ -264,16 +265,19 @@ class ServerHandler < Transito::Service
 
 
             if countAnonimos[:resultado] < 2
-                v = Vehiculo.new(
-                    numPlacas: autosAnonimos[:numPlacas],
-                    modelo: autosAnonimos[:modelo],
-                    marca: autosAnonimos[:field3],
-                    year: autosAnonimos[:año],
-                    color: autosAnonimos[:color],
-                    numPoliza: autosAnonimos[:numPoliza],
-                    aseguradora: autosAnonimos[:field7]
-                )
-                listaVehiculos.push(v)
+                print autosAnonimos,"\n"
+                if autosAnonimos[:numplacas]!= nil
+                    v = Vehiculo.new(
+                        numPlacas: autosAnonimos[:numPlacas],
+                        modelo: autosAnonimos[:modelo],
+                        marca: autosAnonimos[:marca],
+                        year: autosAnonimos[:año],
+                        color: autosAnonimos[:color],
+                        numPoliza: autosAnonimos[:numPoliza],
+                        aseguradora: autosAnonimos[:aseguradora]
+                    )
+                    listaVehiculos.push(v)
+                end
             else
                 if countAnonimos > 0
                     autosAnonimos.each { |row|

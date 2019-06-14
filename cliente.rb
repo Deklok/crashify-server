@@ -21,7 +21,15 @@ def main
 #    response = stub.unificar_reportes(ListaID.new(listaID: listaIDS))
 #print response.msg, "\n"
 
-    fotos = stub.obtener_fotos_reporte(ID.new(identifier: 1))
+    reporte = stub.obtener_detalle_reporte(ID.new(identifier: 1))
+    print reporte.hora,"\n"
+    print reporte.vehiculos,"\n"
+    autos = reporte.vehiculos
+    autos.each { |a|
+        print a.numPlacas,"\n"
+        print a.marca,"\n"
+        print a.aseguradora,"\n"
+    }
 
 #    reportes = stub.obtener_reportes(Mensaje.new(msg: "uwu"))
 #    listareportes = reportes.reportes
