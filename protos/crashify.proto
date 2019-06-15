@@ -13,7 +13,6 @@ service Transito {
     rpc ObtenerDetalleReporte(ID) returns (Reporte) {}
     rpc ObtenerFotosReporte(ID) returns (stream Foto) {}
     rpc DictaminarReporte(Dictamen) returns (Respuesta) {}
-    rpc DictaminarReporteUnificado(DictamenUnificado) returns (Respuesta) {}
     rpc UnificarReportes(ListaID) returns (Respuesta) {}
 }
 

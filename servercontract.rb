@@ -205,7 +205,7 @@ class ServerHandler < Transito::Service
             ]})
             listaFotos = Array.new
             fotos.each { |row|
-                f = Foto.new(
+                yield f = Foto.new(
                     foto: row[:foto]
                 )
             }
@@ -350,32 +350,6 @@ class ServerHandler < Transito::Service
                 code: 99,
                 mensaje: exception.to_s
             )
-        end
-    end
-
-    def dictaminar_reporte_unificado(dictamen, _call)
-        begin
-            listaIds = dictamen.idReporte.join(",")
-            res = @@DB.call_mssql_sproc(:sp_dictaminarReporte, {args: [
-                dictamen.dictamen,
-                dictamen.idSiniestro,
-                dictamen.idUsuario,
-                listaIds,
-                [:output, 'int', 'resultado']
-            ]})
-            if res[:resultado] != -1
-                Respuesta.new(
-                    code: 1,
-                    mensaje: "Reporte dictaminado correctamente"
-                )
-            else
-                Respuesta.new(
-                    code: res[:resultado],
-                    mensaje: "Error al dictaminar el reporte"
-                )
-            end
-        rescue => exception
-            
         end
     end
 
