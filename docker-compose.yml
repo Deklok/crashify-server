@@ -1,0 +1,19 @@
+proxy:
+  image: manolomon/crashify-proxy:latest
+  command: /usr/local/bin/envoy -c /etc/envoy.yaml
+  ports:
+    - '8080:8080'
+  networks:
+    hostnet:
+      external: true
+      name: host
+
+server:
+  image: deklok/crashifydeklok/-server:latest
+  command: bundle exec ruby servercontract.rb
+  expose:
+    - '14586'
+  networks:
+    hostnet:
+      external: true
+      name: host
