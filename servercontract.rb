@@ -208,14 +208,8 @@ class ServerHandler < Transito::Service
             ]})
             fotos = @@DB["EXEC sp_obtenerFotosReporte " + id.identifier.to_s]
             print fotos,"\n"
-            listaFotos = Array.new
             if countFotos[:resultado] > 2
-                print "Más de 2 fotos"
-                fotos.each { |row|
-                    f = Foto.new(
-                        foto: row[:foto]
-                    )
-                }
+                FotosEnumerator.new(fotos).each_item
             else
                 print "Menos de 2 fotos"
             end
@@ -389,6 +383,23 @@ class ServerHandler < Transito::Service
                 code: 99,
                 mensaje: exception.to_s
             )
+        end
+    end
+end
+
+class FotosEnumerator
+    def initialize(fotos)
+        @fotos = fotos
+    end
+
+    def each_item
+        return enum_for(:each_item) unless block_given?
+        begin
+            @fotos.each do |f|
+                yield Foto.new(foto: f[:foto])
+            end
+        rescue StandardError => e
+            fail e
         end
     end
 end
