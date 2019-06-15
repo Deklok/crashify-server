@@ -16,7 +16,7 @@ def main
 #    listaIDS.push(5)
 #    listaIDS.push(6)
 
-#    detalle = stub.obtener_detalle_reporte(ID.new(identifier: 5))
+#    detalle = stub.obtener_detalle_reporte(ID.new(identifier: 1))
 
     fotos = stub.obtener_fotos_reporte(ID.new(identifier: 1))
 

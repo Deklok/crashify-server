@@ -202,15 +202,23 @@ class ServerHandler < Transito::Service
 
     def obtener_fotos_reporte(id, _call)
         begin
-            fotos = @@DB.call_mssql_sproc(:sp_obtenerFotosReporte, {args: [
-                id.identifier
+            countFotos = @@DB.call_mssql_sproc(:sp_contarFotosReporte, {args: [
+                id.identifier,
+                [:output, 'int', 'resultado']
             ]})
+            fotos = @@DB["EXEC sp_obtenerFotosReporte " + id.identifier.to_s]
+            print fotos,"\n"
             listaFotos = Array.new
-            fotos.each { |row|
-                yield f = Foto.new(
-                    foto: row[:foto]
-                )
-            }
+            if countFotos[:resultado] > 2
+                print "Más de 2 fotos"
+                fotos.each { |row|
+                    f = Foto.new(
+                        foto: row[:foto]
+                    )
+                }
+            else
+                print "Menos de 2 fotos"
+            end
         rescue => exception
             print exception, "\n"
         end
