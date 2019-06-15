@@ -2,6 +2,7 @@ version: '3.6'
 services:
   proxy:
     image: manolomon/crashify-proxy:latest
+    container_name: crashify-proxy
     command: /usr/local/bin/envoy -c /etc/envoy.yaml
     ports:
       - '8080:8080'
@@ -9,6 +10,7 @@ services:
 
   server:
     image: deklok/crashify-server:latest
+    container_name: crashify-server
     command: bundle exec ruby servercontract.rb
     expose:
       - '14586'

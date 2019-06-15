@@ -9,6 +9,3 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 COPY . .
-
-EXPOSE 14586
-CMD [ "bundle", "exec", "ruby", "servercontract.rb" ]
