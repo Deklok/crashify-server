@@ -395,7 +395,7 @@ class FotosEnumerator
     def each_item
         return enum_for(:each_item) unless block_given?
         begin
-            fotos.each do |f|
+            @fotos.each do |f|
                 yield Foto.new(foto: f[:foto])
             end
         rescue StandardError => e
