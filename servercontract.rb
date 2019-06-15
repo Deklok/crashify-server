@@ -387,7 +387,7 @@ end
 
 def main
     server = GRPC::RpcServer.new
-    server.add_http2_port('localhost:14586', :this_port_is_insecure)
+    server.add_http2_port('127.0.0.1:14586', :this_port_is_insecure)
     GRPC.logger.info("Corriendo skeleton en puerto inseguro");
     server.handle(ServerHandler)
     print "Iniciando servidor...", "\n"
