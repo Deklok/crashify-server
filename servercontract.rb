@@ -38,15 +38,19 @@ class ServerHandler < Transito::Service
     end
 
     def iniciar_sesion(sesion, _call)
-        user = @@tblUsuario.where{(usuario =~ sesion.usuario) & (password =~ sesion.password)}.first
-        Usuario.new(
-            idUsuario: user[:idusuario],
-            nombre: user[:nombre],
-            rol: user[:rol],
-            usuario: user[:usuario],
-            password: user[:password],
-            idSuperior: user[:idsuperior],
-        )
+        begin
+            user = @@tblUsuario.where{(usuario =~ sesion.usuario) & (password =~ sesion.password)}.first
+            Usuario.new(
+                idUsuario: user[:idusuario],
+                nombre: user[:nombre],
+                rol: user[:rol],
+                usuario: user[:usuario],
+                password: user[:password],
+                idSuperior: user[:idsuperior],
+            ) 
+        rescue => exception
+            print exception,"\n"
+        end
     end
 
     def registrar_usuario(usuario, _call)
@@ -59,7 +63,7 @@ class ServerHandler < Transito::Service
                 usuario.idSuperior,
                 [:output, 'int', 'resultado']
             ]}) 
-            if res[:resultado] != -1
+            if res[:resultado] > 0
                 Respuesta.new(
                     code: 1,
                     mensaje: "Usuario registrado correctamente"
@@ -232,29 +236,16 @@ class ServerHandler < Transito::Service
                 id.identifier,
                 [:output, 'int', 'resultado']
             ]})
-            autosRegistrados = @@DB.call_mssql_sproc(:sp_obtenerVehiculosReporte, {args: [
-                id.identifier
-            ]})
-            autosAnonimos = @@DB.call_mssql_sproc(:sp_obtenerVehiculosAnonimosReporte, {args: [
-                id.identifier
-            ]})
-
-            if countRegistrados[:resultado] < 2
-                print autosRegistrados,"\n"
-                v = Vehiculo.new(
-                    numPlacas: autosRegistrados[:numplacas],
-                    modelo: autosRegistrados[:modelo],
-                    marca: autosRegistrados[:marca],
-                    year: autosRegistrados[:año],
-                    color: autosRegistrados[:color],
-                    numPoliza: autosRegistrados[:numpoliza],
-                    aseguradora: autosRegistrados[:aseguradora]
-                )
-                listaVehiculos.push(v)
-            else
+            autosRegistrados = @@DB["EXEC sp_obtenerVehiculosReporte " + id.identifier.to_s]
+            autosAnonimos = @@DB["EXEC sp_obtenerVehiculosAnonimosReporte " + id.identifier.to_s]
+            print countRegistrados,"\n"
+            print countAnonimos,"\n"
+            print autosRegistrados,"\n"
+            print autosAnonimos,"\n"
+            if countRegistrados[:resultado] > 0
                autosRegistrados.each { |row|
                 print row, "\n"
-                v = ReporteResumido.new(
+                v = Vehiculo.new(
                     numPlacas: row[:numplacas],
                     modelo: row[:modelo],
                     marca: row[:marca],
@@ -262,42 +253,24 @@ class ServerHandler < Transito::Service
                     color: row[:color],
                     numPoliza: row[:numpoliza],
                     aseguradora: row[:aseguradora]
-                )
+                    )
                 listaVehiculos.push(v)
-            }
+                }
             end
-
-
-            if countAnonimos[:resultado] < 2
-                print autosAnonimos,"\n"
-                if autosAnonimos[:numplacas]!= nil
+            if countAnonimos[:resultado] > 0
+                autosAnonimos.each { |row|
+                    print row, "\n"
                     v = Vehiculo.new(
-                        numPlacas: autosAnonimos[:numPlacas],
-                        modelo: autosAnonimos[:modelo],
-                        marca: autosAnonimos[:marca],
-                        year: autosAnonimos[:año],
-                        color: autosAnonimos[:color],
-                        numPoliza: autosAnonimos[:numPoliza],
-                        aseguradora: autosAnonimos[:aseguradora]
+                        numPlacas: row[:numPlacas],
+                        modelo: row[:modelo],
+                        marca: row[:marca],
+                        year: row[:año],
+                        color: row[:color],
+                        numPoliza: row[:numPoliza],
+                        aseguradora: row[:aseguradora]
                     )
                     listaVehiculos.push(v)
-                end
-            else
-                if countAnonimos > 0
-                    autosAnonimos.each { |row|
-                        print row, "\n"
-                        v = ReporteResumido.new(
-                            numPlacas: row[:numPlacas],
-                            modelo: row[:modelo],
-                            marca: row[:field3],
-                            year: row[:año],
-                            color: row[:color],
-                            numPoliza: row[:numPoliza],
-                            aseguradora: row[:field7]
-                        )
-                        listaVehiculos.push(v)
-                    }
-                end
+                }
             end
 
             Reporte.new(
