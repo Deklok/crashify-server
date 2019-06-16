@@ -272,6 +272,7 @@ class ServerHandler < Transito::Service
                     listaVehiculos.push(v)
                 }
             end
+            listaVehiculos.uniq! 
 
             Reporte.new(
                 idReporte: res[:idreporte],
