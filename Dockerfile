@@ -8,4 +8,5 @@ WORKDIR /usr/src/app
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
+# Add server files
 COPY . .
